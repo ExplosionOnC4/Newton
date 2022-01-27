@@ -37,8 +37,6 @@ if __name__ == '__main__':
     C = X + Y[:, None] * 1j
 
     isConvergent = np.zeros_like(C, dtype = bool)
-    values = np.zeros_like(C, dtype = int)
-    values_next = np.zeros_like(C, dtype = int)
 
 
     stillChecking = np.ones_like(C, dtype = bool)
@@ -52,8 +50,8 @@ if __name__ == '__main__':
 
 
     for i in range(maxiter):
-        values_next[stillChecking] = newton(values_next[stillChecking])
-        stillChecking = values_next - values < epsilon
+        values_next[stillChecking] = newton(values[stillChecking])
+        stillChecking = np.abs(values_next - values) > epsilon
         values = np.array(values_next)
 
 
