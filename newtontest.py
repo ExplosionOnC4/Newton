@@ -21,6 +21,8 @@ def newton(z):
 
 if __name__ == '__main__':
 
+    epsilon = 1e-5
+    maxiter = 1000
     xmin = 0
     xmax = 5
     xn = 6
@@ -40,9 +42,21 @@ if __name__ == '__main__':
 
 
     stillChecking = np.ones_like(C, dtype = bool)
+    stillChecking[0,0] = False
 
+    print(stillChecking)
+    
+    values = np.array(C)
     values_next = np.array(C)
 
-    values_next[stillChecking] = newton(values_next[stillChecking])
+
+
+    for i in range(maxiter):
+        values_next[stillChecking] = newton(values_next[stillChecking])
+        stillChecking = values_next - values < epsilon
+        values = np.array(values_next)
+
+
+    print(values)
 
 
