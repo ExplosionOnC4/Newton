@@ -1,4 +1,7 @@
-import numpy as np 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import colors
+import time
 
 
 ## Use numpy.power
@@ -14,21 +17,31 @@ def poly(z):
     h = g - 1
     return h
 
+def findSolutions(func):
+    return np.array([1,-1, 1j,-1j])
+
 def newton(z):
     z_next = z - poly(z)/derivative(z)
     return z_next
 
 
+
 if __name__ == '__main__':
 
+
+    tic = time.perf_counter()
+    
+    solutions = findSolutions(0)
+
     epsilon = 1e-5
-    maxiter = 1000
+    tol = 1e-4
+    maxiter = 100
     xmin = 0
-    xmax = 5
-    xn = 6
-    ymin = 0
-    ymax = 5
-    yn = 6
+    xmax = 6
+    xn = 1000
+    ymin = -5
+    ymax = 6
+    yn = 1000
 
 
     X = np.linspace(xmin, xmax, xn).astype(np.float32)
@@ -36,15 +49,11 @@ if __name__ == '__main__':
 
     C = X + Y[:, None] * 1j
 
-    isConvergent = np.zeros_like(C, dtype = bool)
-    values = np.zeros_like(C, dtype = int)
-    values_next = np.zeros_like(C, dtype = int)
+    colours = np.zeros_like(C, dtype = int)
 
 
     stillChecking = np.ones_like(C, dtype = bool)
-    stillChecking[0,0] = False
 
-    print(stillChecking)
     
     values = np.array(C)
     values_next = np.array(C)
@@ -52,11 +61,24 @@ if __name__ == '__main__':
 
 
     for i in range(maxiter):
-        values_next[stillChecking] = newton(values_next[stillChecking])
-        stillChecking = values_next - values < epsilon
+        values_next[stillChecking] = newton(values[stillChecking])
+        stillChecking = np.abs(values_next - values) > epsilon
         values = np.array(values_next)
 
+    for i in range(len(values)):
+        for j in range(len(values[i])):
+            for k in range(len(solutions)):
+                if (abs(solutions[k] - values[i][j]) < tol):
+                    colours[i][j] = k + 1
+                    break
 
-    print(values)
+    toc = time.perf_counter()
 
+    print(f'Total time is {toc - tic: 05f} seconds')
 
+    # print(np.sum(colours == 4))
+
+    # print(np.sum(np.abs(values - 1j) < epsilon))
+    # print(np.sum(np.abs(values - 1) < epsilon))
+    # print(np.sum(np.abs(values + 1j) < epsilon))
+    # print(np.sum(np.abs(values + 1) < epsilon))
