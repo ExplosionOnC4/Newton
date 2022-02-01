@@ -1,4 +1,7 @@
-import numpy as np 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import colors
+import time
 
 # stub, potentially use other lib for finding derivative
 def derivative(z):
@@ -16,7 +19,7 @@ def poly(z):
     return h
 
 # stub, needs to find solutions of func (to use with poly)
-def findSolutions(func)
+def findSolutions(func):
     return np.array([1,-1, 1j,-1j])
 
 # Does one iteration of Newton-Raphson
@@ -25,17 +28,24 @@ def newton(z):
     return z_next
 
 
+
 if __name__ == '__main__':
 
     # Parameters
+
+    tic = time.perf_counter()
+    
+    solutions = findSolutions(0)
+
     epsilon = 1e-5
-    maxiter = 1000
+    tol = 1e-4
+    maxiter = 100
     xmin = 0
-    xmax = 5
-    xn = 6
-    ymin = 0
-    ymax = 5
-    yn = 6
+    xmax = 6
+    xn = 1000
+    ymin = -5
+    ymax = 6
+    yn = 1000
 
     # Create complex plane
     X = np.linspace(xmin, xmax, xn).astype(np.float32)
@@ -44,6 +54,7 @@ if __name__ == '__main__':
 
     # Check if complex point has converged onto a solution
     isConvergent = np.zeros_like(C, dtype = bool)
+    colours = np.zeros_like(C, dtype = int)
 
 
     # Check if consecutive NR sequence converges
@@ -51,7 +62,6 @@ if __name__ == '__main__':
     # remove division by zero case, fix later
     stillChecking[0,0] = False
 
-    print(stillChecking)
     
     values = np.array(C)
     values_next = np.array(C)
@@ -63,7 +73,20 @@ if __name__ == '__main__':
         stillChecking = np.abs(values_next - values) > epsilon
         values = np.array(values_next)
 
+    for i in range(len(values)):
+        for j in range(len(values[i])):
+            for k in range(len(solutions)):
+                if (abs(solutions[k] - values[i][j]) < tol):
+                    colours[i][j] = k + 1
+                    break
 
-    print(values)
+    toc = time.perf_counter()
 
+    print(f'Total time is {toc - tic: 05f} seconds')
 
+    # print(np.sum(colours == 4))
+
+    # print(np.sum(np.abs(values - 1j) < epsilon))
+    # print(np.sum(np.abs(values - 1) < epsilon))
+    # print(np.sum(np.abs(values + 1j) < epsilon))
+    # print(np.sum(np.abs(values + 1) < epsilon))
