@@ -40,11 +40,11 @@ if __name__ == '__main__':
     epsilon = 1e-5
     tol = 1e-4
     maxiter = 100
-    xmin = 0
-    xmax = 6
+    xmin = -3
+    xmax = 3
     xn = 1000
-    ymin = -5
-    ymax = 6
+    ymin = -3
+    ymax = 3
     yn = 1000
 
     # Create complex plane
@@ -80,7 +80,24 @@ if __name__ == '__main__':
                     colours[i][j] = k + 1
                     break
 
+    dpi = 72
+    width = 10
+    height = 10*yn/xn
+    fig = plt.figure(figsize=(width, height), dpi=dpi)
+    ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1)
+    cmap = colors.ListedColormap(['k','b','y','g','r'])
+
+    # Shaded rendering
+    light = colors.LightSource(azdeg=315, altdeg=10)
+    M = light.shade(colours, cmap=cmap, vert_exag=1.5,
+                    blend_mode='hsv')
+    ax.imshow(M, extent=[xmin, xmax, ymin, ymax], interpolation="bicubic")
+    ax.set_xticks([])
+    ax.set_yticks([])
+
     toc = time.perf_counter()
+    plt.show()
+
 
     print(f'Total time is {toc - tic: 05f} seconds')
 
