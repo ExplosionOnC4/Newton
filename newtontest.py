@@ -103,26 +103,32 @@ if __name__ == '__main__':
 
     # Using array operations is 5 times faster for f(z) = z**5 + z**2 - 0.1.
     for k in range(len(solutions)):
-        I = abs(solutions[k] - values) < tol
+        I = np.abs(solutions[k] - values) < tol
         colours[I] = k + 1
         temp = np.sum(I)
         print(f'Total number of the {k}th colour is {temp}')
 
     print(np.sum(colours == 0))
+    if (np.sum(colours == 0) > 0):
+        cmap = colors.ListedColormap(['k','b','y','g','r','c','w'])
+    else:
+        cmap = colors.ListedColormap(['b','y','g','r','c','w'])
+    
+    plt.imshow(colours, extent=[xmin, xmax, ymin, ymax])
 
-
-    dpi = 72
+    dpi = 200
     width = 10
     height = 10*yn/xn
     fig = plt.figure(figsize=(width, height), dpi=dpi)
     ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1)
-    cmap = colors.ListedColormap(['k','b','y','g','r'])
+    
+    norm = colors.BoundaryNorm(np.unique(colours), len(np.unique(colours))-1)
 
     # Shaded rendering
     light = colors.LightSource(azdeg=315, altdeg=10)
-    M = light.shade(colours, cmap=cmap, vert_exag=1.5,
+    M = light.shade(colours, cmap=cmap, norm=norm, vert_exag=1.5,
                     blend_mode='hsv')
-    ax.imshow(M, extent=[xmin, xmax, ymin, ymax], interpolation="bicubic")
+    ax.imshow(M, extent=[xmin, xmax, ymin, ymax], interpolation="spline36")
     ax.set_xticks([])
     ax.set_yticks([])
 
@@ -130,3 +136,4 @@ if __name__ == '__main__':
     plt.show()
 
     print(f'Total time is {toc - tic: 05f} seconds')
+
